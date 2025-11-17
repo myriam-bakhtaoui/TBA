@@ -1,6 +1,19 @@
 # Define the Player class.
 class Player():
-
+    """ 
+    Représente le joueur dans le jeu d'aventure.
+    
+    Le joueur possède un nom et une position actuelle dans le monde du jeu.
+    Il peut se déplacer entre les différentes salles via les sorties disponibles.
+    
+    Attributes:
+        name (str): Le nom du joueur
+        current_room (Room): La salle actuelle du joueur
+        
+    Methods:
+        move(direction): Tente de déplacer le joueur vers une direction donnée
+    """
+    
     # Define the constructor.
     def __init__(self, name):
         self.name = name
