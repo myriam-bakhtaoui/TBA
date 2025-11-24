@@ -6,6 +6,7 @@ from room import Room
 from player import Player
 from command import Command
 from actions import Actions
+from utils import normalize_direction
 
 class Game:
 
@@ -102,16 +103,21 @@ class Game:
         # Setup direction map
         for d in self.valid_directions:
             self.direction_map[d] = d
+            # accept lowercase single-letter directions as well (e.g. 'o' -> 'O')
+            self.direction_map[d.lower()] = d
+        # Populate direction_map with canonical mappings using lowercase keys only.
+        # We keep single-letter uppercase keys (N,E,S,O,U,D) and their lowercase counterparts,
+        # but for multi-letter words we store only lowercased forms to avoid duplication.
         self.direction_map.update({
-            "NORD": "N",
-            "SUD": "S",
-            "EST": "E",
-            "OUEST": "O",
-            "UP": "U",
-            "DOWN": "D",
+            # Français (lowercase keys)
+            "nord": "N", "sud": "S", "est": "E", "ouest": "O", "haut": "U", "bas": "D",
+            # Anglais (lowercase keys)
+            "north": "N", "south": "S", "east": "E", "west": "O", "up": "U", "down": "D",
+            # Abréviations (lowercase keys)
+            "no": "N", "so": "S", "ou": "O",
+            # Variantes (lowercase keys)
+            "monter": "U", "descendre": "D",
         })
-        # Normaliser les clés pour correspondre à la normalisation
-        self.direction_map = {k.casefold(): v for k, v in self.direction_map.items()}
 
     # Play the game
     def play(self):
@@ -133,8 +139,18 @@ class Game:
         elif command_word in self.commands:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
+        # Allow entering a direction directly (e.g. 'O', 'Ouest', 'ouest')
+        elif normalize_direction(command_word, self.direction_map, self.valid_directions) is not None:
+            go_command = self.commands.get("go")
+            if go_command:
+                # pass the canonical direction (e.g. 'O') as the parameter
+                canonical = normalize_direction(command_word, self.direction_map, self.valid_directions)
+                go_command.action(self, ["go", canonical], go_command.number_of_parameters)
+            else:
+                print(f"\nCommande de déplacement indisponible.\n")
         else:
             print(f"\nCommande '{command_word}' non reconnue. Tapez 'help' pour l'aide.\n")
+
 
 
     # Print the welcome message

@@ -16,6 +16,8 @@ MSG0 = "\nLa commande '{command_word}' ne prend pas de paramètre.\n"
 # The MSG1 variable is used when the command takes 1 parameter.
 MSG1 = "\nLa commande '{command_word}' prend 1 seul paramètre.\n"
 
+from utils import normalize_direction
+
 class Actions:
 
     def go(game, list_of_words, number_of_parameters):
@@ -53,12 +55,13 @@ class Actions:
             print(MSG1.format(command_word=command_word))
             return False
 
-        # Get the direction from the list of words and normalize to uppercase.
-        direction = list_of_words[1].upper()
+        # Get the direction token from the command and normalize using utils.normalize_direction
+        raw = list_of_words[1]
+        direction = normalize_direction(raw, game.direction_map, game.valid_directions)
 
         # Verify the direction is valid (exists in the game's known directions).
         if direction not in game.valid_directions:
-            print(f"\nDirection invalide : '{direction}'. Utilisez une direction parmi {sorted(game.valid_directions)}\n")
+            print(f"\nTU ES PERDU '{raw}' N'EST POINT ISSUE DE NOTRE MONDE . Utilisez une direction parmi {sorted(game.valid_directions)}\n")
             return False
 
         # Move the player in the direction specified by the parameter.
