@@ -44,7 +44,7 @@ class Actions:
         False
 
         """
-        
+
         player = game.player
         l = len(list_of_words)
         # If the number of parameters is incorrect, print an error message and return False.
@@ -53,8 +53,14 @@ class Actions:
             print(MSG1.format(command_word=command_word))
             return False
 
-        # Get the direction from the list of words.
-        direction = list_of_words[1]
+        # Get the direction from the list of words and normalize to uppercase.
+        direction = list_of_words[1].upper()
+
+        # Verify the direction is valid (exists in the game's known directions).
+        if direction not in game.valid_directions:
+            print(f"\nDirection invalide : '{direction}'. Utilisez une direction parmi {sorted(game.valid_directions)}\n")
+            return False
+
         # Move the player in the direction specified by the parameter.
         player.move(direction)
         return True
